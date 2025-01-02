@@ -13,6 +13,6 @@ export interface IAlbum {
 
 export interface ITrack {
     name: string;
-    artist: string;
+    album: string;
     duration: string;
 }
