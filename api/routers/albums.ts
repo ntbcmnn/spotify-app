@@ -27,6 +27,7 @@ albumsRouter.get('/', async (req: express.Request, res: express.Response, next) 
             }
 
             res.send(albums);
+            return;
         }
 
         const albums = await Album

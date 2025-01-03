@@ -23,6 +23,7 @@ tracksRouter.get('/', async (req: express.Request, res: express.Response, next) 
             }
 
             res.send(tracks);
+            return;
         }
 
         const tracks = await Track.find();
