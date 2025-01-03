@@ -8,7 +8,7 @@ const artistsRouter = express.Router();
 
 artistsRouter.get('/', async (req: express.Request, res: express.Response, next) => {
     try {
-        const artists = await Artist.find();
+        const artists = await Artist.find().select("_id name info");
         res.send(artists);
     } catch (e) {
         next(e);
