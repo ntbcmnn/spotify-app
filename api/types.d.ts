@@ -16,3 +16,9 @@ export interface ITrack {
     album: string;
     duration: string;
 }
+
+export interface UserFields {
+    username: string;
+    password: string;
+    token: string;
+}
