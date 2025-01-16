@@ -15,6 +15,7 @@ export interface ITrack {
     name: string;
     album: string;
     duration: string;
+    track_number: number;
 }
 
 export interface UserFields {
