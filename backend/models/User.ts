@@ -19,14 +19,21 @@ const UserSchema = new Schema<UserFields, UserModel, UserMethods>({
         type: String,
         required: true,
         unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    token: {
-        type: String,
-        required: true,
+        validate: {
+            validator: async function (value: string): Promise<boolean> {
+                const user: UserFields | null = await User.findOne({username: value});
+                return !user;
+            },
+            message: 'This username is already taken'
+        },
+        password: {
+            type: String,
+            required: true,
+        },
+        token: {
+            type: String,
+            required: true,
+        }
     }
 });
 
