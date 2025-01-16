@@ -11,6 +11,10 @@ const TrackSchema = new mongoose.Schema({
         required: [true, 'Album is required.'],
     },
     duration: String,
+    track_number: {
+        type: Number,
+        required: [true, 'Track number is required.'],
+    }
 });
 
 const Track = mongoose.model('Track', TrackSchema);
