@@ -1,7 +1,7 @@
 import express from "express";
 import Track from "../models/Track";
 import {ITrack} from "../types";
-import mongoose from "mongoose";
+import mongoose, {Error} from "mongoose";
 
 const tracksRouter = express.Router();
 
@@ -15,7 +15,17 @@ tracksRouter.get('/', async (req: express.Request, res: express.Response, next) 
                 return;
             }
 
-            const tracks = await Track.find({album}).populate("album", "-_id name release_year");
+            const tracks = await Track
+                .find({album})
+                .sort({track_number: 1})
+                .populate({
+                    path: "album",
+                    select: "name release_year artist",
+                    populate: {
+                        path: "artist",
+                        select: "name"
+                    }
+                });
 
             if (tracks.length === 0) {
                 res.status(404).send('No tracks found for this album');
@@ -34,12 +44,13 @@ tracksRouter.get('/', async (req: express.Request, res: express.Response, next) 
 });
 
 tracksRouter.post('/', async (req: express.Request, res: express.Response, next) => {
-    const {name, album, duration} = req.body;
+    const {name, album, duration, track_number} = req.body;
 
     const newTrack: ITrack = {
         name,
         album,
         duration,
+        track_number
     };
 
     try {
@@ -47,15 +58,9 @@ tracksRouter.post('/', async (req: express.Request, res: express.Response, next)
         await track.save();
         res.send(track);
     } catch (error) {
-        if (error instanceof mongoose.Error.ValidationError) {
-            const ValidationErrors = Object.keys(error.errors).map((key: string) => (
-                    {
-                        field: key,
-                        message: error.errors[key].message,
-                    }
-                )
-            );
-            res.status(400).send({errors: ValidationErrors});
+        if (error instanceof Error.ValidationError) {
+            res.status(400).send(error);
+            return;
         }
         next(error);
     }
