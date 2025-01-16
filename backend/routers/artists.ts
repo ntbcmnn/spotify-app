@@ -1,14 +1,14 @@
 import express from "express";
 import Artist from "../models/Artist";
 import {imagesUpload} from "../multer";
-import mongoose from "mongoose";
+import mongoose, {Error} from "mongoose";
 import {IArtist} from "../types";
 
 const artistsRouter = express.Router();
 
 artistsRouter.get('/', async (req: express.Request, res: express.Response, next) => {
     try {
-        const artists = await Artist.find().select("_id name info");
+        const artists = await Artist.find();
         res.send(artists);
     } catch (e) {
         next(e);
@@ -29,15 +29,9 @@ artistsRouter.post('/', imagesUpload.single('image'), async (req: express.Reques
         await artist.save();
         res.send(artist);
     } catch (error) {
-        if (error instanceof mongoose.Error.ValidationError) {
-            const ValidationErrors = Object.keys(error.errors).map((key: string) => (
-                    {
-                        field: key,
-                        message: error.errors[key].message,
-                    }
-                )
-            );
-            res.status(400).send({errors: ValidationErrors});
+        if (error instanceof Error.ValidationError) {
+            res.status(400).send(error);
+            return;
         }
         next(error);
     }
