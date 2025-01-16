@@ -1,7 +1,7 @@
 import express from "express";
 import Album from "../models/Album";
 import {imagesUpload} from "../multer";
-import mongoose from "mongoose";
+import mongoose, {Error} from "mongoose";
 import {IAlbum} from "../types";
 
 const albumsRouter = express.Router();
@@ -18,8 +18,8 @@ albumsRouter.get('/', async (req: express.Request, res: express.Response, next) 
 
             const albums = await Album
                 .find({artist})
-                .select("-_id name release_year image")
-                .populate("artist", "-_id name info");
+                .sort({release_year: -1})
+                .populate("artist", "_id name info");
 
             if (albums.length === 0) {
                 res.status(404).send('No albums found for this artist');
@@ -32,8 +32,8 @@ albumsRouter.get('/', async (req: express.Request, res: express.Response, next) 
 
         const albums = await Album
             .find()
-            .select("-_id name release_year image")
-            .populate("artist", "-_id name info");
+            .sort({release_year: -1})
+            .populate("artist", "_id name info");
 
         res.send(albums);
     } catch (e) {
@@ -56,15 +56,9 @@ albumsRouter.post('/', imagesUpload.single('image'), async (req: express.Request
         await album.save();
         res.send(album);
     } catch (error) {
-        if (error instanceof mongoose.Error.ValidationError) {
-            const ValidationErrors = Object.keys(error.errors).map((key: string) => (
-                    {
-                        field: key,
-                        message: error.errors[key].message,
-                    }
-                )
-            );
-            res.status(400).send({errors: ValidationErrors});
+        if (error instanceof Error.ValidationError) {
+            res.status(400).send(error);
+            return;
         }
         next(error);
     }
@@ -81,7 +75,6 @@ albumsRouter.get('/:id', async (req: express.Request, res: express.Response, nex
     try {
         const album = await Album
             .findById(id)
-            .select("_id name release_year")
             .populate("artist", "-_id name info");
 
         if (!album) {
