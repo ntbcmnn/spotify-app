@@ -14,7 +14,8 @@ const TrackSchema = new mongoose.Schema({
     track_number: {
         type: Number,
         required: [true, 'Track number is required.'],
-    }
+    },
+    youtubeLink: String,
 });
 
 const Track = mongoose.model('Track', TrackSchema);
