@@ -4,3 +4,33 @@
   font-family: "Montserrat", serif;
   font-optical-sizing: auto;
 }
+
+.dropdown-menu .dropdown-item:hover,
+.dropdown-menu .dropdown-item:focus,
+.dropdown-menu .dropdown-item.active {
+  background-color: #212529 !important;
+  color: #fff !important;
+}
+
+.album-img {
+  width: 60px;
+  height: auto;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.text-start {
+  font-size: 14px;
+}
+
+.user-history {
+  color: #fff;
+}
+
+.user-history:hover {
+  color: #888e97 !important;
+}
