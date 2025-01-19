@@ -20,7 +20,7 @@ tracksRouter.get('/', async (req: express.Request, res: express.Response, next) 
                 .sort({track_number: 1})
                 .populate({
                     path: "album",
-                    select: "name release_year artist",
+                    select: "name image release_year artist",
                     populate: {
                         path: "artist",
                         select: "name"
