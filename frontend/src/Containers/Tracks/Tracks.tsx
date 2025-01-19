@@ -6,6 +6,7 @@ import { selectAllTracks, selectTracksLoading } from '../../store/slices/tracksS
 import Loader from '../../Components/UI/Loader/Loader.tsx';
 import Track from '../../Components/Track/Track.tsx';
 import { ITrack } from '../../types';
+import { api_URL } from '../../globalConstants.ts';
 
 const Tracks = () => {
   const {albumId} = useParams();
@@ -19,15 +20,24 @@ const Tracks = () => {
     }
   }, [dispatch, albumId]);
 
-  const artistName: string = tracks.length > 0 ? tracks[0].album.artist.name : 'No tracks found';
-  const albumName: string = tracks.length > 0 ? tracks[0].album.name : 'No tracks found';
+  const artistName: string = tracks.length > 0 ? tracks[0].album.artist.name : 'No artists found';
+  const albumName: string = tracks.length > 0 ? tracks[0].album.name : 'No albums found';
+  const albumImage: string | undefined | null = tracks.length > 0 ? tracks[0]?.album?.image : undefined;
 
   return (
     <div className="container">
       {isLoading ? <Loader/> :
         <>
-          <h1 className="mb-4">{artistName}</h1>
-          <h2 className="mb-5">{albumName}</h2>
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              <h1 className="mb-4">{artistName}</h1>
+              <h2 className="mb-4">{albumName}</h2>
+            </div>
+            {albumImage && (
+              <img src={`${api_URL}/${albumImage}`} alt={albumName} className="mb-5 w-25 h-auto"/>
+            )}
+          </div>
+
           {tracks.length > 0 ?
             <ul className="list-group list-group-flush d-flex justify-content-center">
               {tracks.map((track: ITrack) => (
