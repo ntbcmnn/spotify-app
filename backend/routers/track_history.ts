@@ -53,4 +53,38 @@ track_historyRouter.post('/', async (req, res, next) => {
     }
 });
 
+track_historyRouter.get('/', async (req, res, next) => {
+    const token = req.get('Authorization');
+
+    if (!token) {
+        res.status(401).send({error: 'No token present'});
+        return;
+    }
+
+    const user = await User.findOne({token});
+
+    if (!user) {
+        res.status(401).send({error: 'No user matches this token'});
+        return;
+    }
+
+    try {
+        const trackHistory = await TrackHistory
+            .find({user: user._id})
+            .populate({
+                path: 'track',
+                populate: {
+                    path: 'album',
+                    populate: {
+                        path: 'artist'
+                    },
+                },
+            })
+            .sort({datetime: -1});
+        res.send(trackHistory);
+    } catch (error) {
+        next(error);
+    }
+});
+
 export default track_historyRouter;
