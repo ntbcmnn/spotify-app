@@ -1,29 +1,68 @@
 export interface IArtist {
   _id: string;
+  user: string;
   name: string;
   info: string;
-  image: string | null
+  image: File | null;
+  isPublished: boolean;
+}
+
+export interface IArtistMutation {
+  name: string;
+  info: string;
+  image: File | null;
 }
 
 export interface IAlbum {
   _id: string;
+  user: string;
   name: string;
   artist: {
+    _id: string;
     name: string;
   };
   release_year: number;
-  image: string | null;
+  image: File | null;
+  isPublished: boolean;
+}
+
+export interface IAlbumMutation {
+  name: string;
+  artist: {
+    _id: string;
+    name: string;
+  };
+  release_year: string;
+  image: File | null;
 }
 
 export interface ITrack {
   _id: string;
+  user: string;
   name: string;
   album: {
+    _id: string;
     name: string;
-    image: string | null;
+    image: File | null;
     artist: {
       name: string;
     };
+  };
+  duration: string;
+  track_number: string;
+  youtubeLink: string;
+  isPublished: boolean;
+}
+
+export interface ITrackMutation {
+  name: string;
+  artist: {
+    _id: string;
+    name: string;
+  };
+  album: {
+    _id: string;
+    name: string;
   };
   duration: string;
   track_number: number;
@@ -34,6 +73,7 @@ export interface IUser {
   _id: string;
   username: string;
   token: string;
+  role: string;
 }
 
 export interface ITrackHistory {
@@ -42,7 +82,7 @@ export interface ITrackHistory {
     name: string;
     album: {
       name: string;
-      image: string | null;
+      image: File | null;
       artist: {
         name: string;
       };
