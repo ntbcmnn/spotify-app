@@ -1,6 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
 const ArtistSchema = new mongoose.Schema({
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'User is required.'],
+    },
     name: {
         type: String,
         required: [true, `Artist's name is required.`],
@@ -10,6 +15,10 @@ const ArtistSchema = new mongoose.Schema({
         default: null,
     },
     info: String,
+    isPublished: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const Artist = mongoose.model('Artist', ArtistSchema);
