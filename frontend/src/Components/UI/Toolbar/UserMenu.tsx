@@ -26,7 +26,13 @@ const UserMenu: React.FC<Props> = ({user}) => {
 
   return (
     <div className="d-flex align-items-center gap-4">
-      <NavLink className="user-history text-decoration-none" to="/history">Track History</NavLink>
+      <NavLink to="/artists/new" className="user-menu-link text-decoration-none">Add artist</NavLink>
+      <NavLink to="/albums/new" className="user-menu-link text-decoration-none">Add album</NavLink>
+      <NavLink to="/tracks/new" className="user-menu-link text-decoration-none">Add track</NavLink>
+
+      <NavLink className="user-menu-link text-decoration-none border-start border-end px-4" to="/history">
+        Track History
+      </NavLink>
 
       <div className="dropdown">
         <button
