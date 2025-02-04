@@ -74,6 +74,9 @@ export interface IUser {
   username: string;
   token: string;
   role: string;
+  displayName: string;
+  googleID?: string;
+  avatar: string | null;
 }
 
 export interface ITrackHistory {
@@ -99,6 +102,8 @@ export interface RegisterResponse {
 export interface RegisterMutation {
   username: string;
   password: string;
+  avatar: File | null;
+  displayName: string;
 }
 
 export interface LoginMutation {
