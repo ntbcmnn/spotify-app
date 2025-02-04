@@ -3,8 +3,9 @@ import { LoginMutation } from '../../types';
 import { useAppDispatch, useAppSelector } from '../../app/hooks.ts';
 import { selectLoginError, selectLoginLoading } from '../../store/slices/usersSlice.ts';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { login } from '../../store/thunks/usersThunk.ts';
+import { googleLogin, login } from '../../store/thunks/usersThunk.ts';
 import Loader from '../../Components/UI/Loader/Loader.tsx';
+import { GoogleLogin } from '@react-oauth/google';
 
 const LoginPage = () => {
   const dispatch = useAppDispatch();
@@ -27,6 +28,11 @@ const LoginPage = () => {
     navigate('/');
   };
 
+  const googleLoginHandler = async (credential: string) => {
+    await dispatch(googleLogin(credential)).unwrap();
+    navigate('/');
+  };
+
   return (
     <div className="container mt-5" style={{maxWidth: '400px'}}>
       <div className="text-center mb-4">
@@ -34,11 +40,26 @@ const LoginPage = () => {
         <h2 className="mt-2">Sign In</h2>
       </div>
 
+      <div className="mb-3 d-flex flex-column align-items-center">
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            if (credentialResponse.credential) {
+              void googleLoginHandler(credentialResponse.credential);
+            }
+          }}
+          onError={() => {
+            console.log('Login Failed');
+          }}
+        >
+        </GoogleLogin>
+      </div>
+
       {loginError && (
         <div className="alert alert-danger" role="alert">
           {loginError.error}
         </div>
       )}
+
       {isLoading ? <Loader/> :
         <form onSubmit={onSubmit}>
           <div className="mb-3">
