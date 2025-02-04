@@ -3,8 +3,10 @@ import { RegisterMutation } from '../../types';
 import { useAppDispatch, useAppSelector } from '../../app/hooks.ts';
 import { selectRegisterError, selectRegisterLoading } from '../../store/slices/usersSlice.ts';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { register } from '../../store/thunks/usersThunk.ts';
+import { googleLogin, register } from '../../store/thunks/usersThunk.ts';
 import Loader from '../../Components/UI/Loader/Loader.tsx';
+import { GoogleLogin } from '@react-oauth/google';
+import FileInput from '../../Components/UI/FileInput/FileInput.tsx';
 
 const RegisterPage = () => {
   const dispatch = useAppDispatch();
@@ -14,6 +16,8 @@ const RegisterPage = () => {
   const [form, setForm] = useState<RegisterMutation>({
     username: '',
     password: '',
+    avatar: null,
+    displayName: '',
   });
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,6 +43,24 @@ const RegisterPage = () => {
     }
   };
 
+  const googleLoginHandler = async (credential: string) => {
+    await dispatch(googleLogin(credential)).unwrap();
+    navigate('/');
+  };
+
+  const onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const {name, files} = e.target;
+
+    if (files) {
+      setForm((prevState: RegisterMutation) => ({
+        ...prevState,
+        [name]: files[0] || null,
+      }));
+    }
+  };
+
   return (
     <div className="container mt-5" style={{maxWidth: '400px'}}>
       <div className="text-center mb-4">
@@ -47,6 +69,20 @@ const RegisterPage = () => {
       </div>
       {isLoading ? <Loader/> :
         <form onSubmit={onSubmit}>
+          <div className="mb-3 d-flex flex-column align-items-center">
+            <GoogleLogin
+              onSuccess={(credentialResponse) => {
+                if (credentialResponse.credential) {
+                  void googleLoginHandler(credentialResponse.credential);
+                }
+              }}
+              onError={() => {
+                console.log('Login Failed');
+              }}
+            >
+            </GoogleLogin>
+          </div>
+
           <div className="mb-3">
             <label htmlFor="username" className="form-label">Username</label>
             <input
@@ -63,6 +99,21 @@ const RegisterPage = () => {
           </div>
 
           <div className="mb-3">
+            <label htmlFor="displayName" className="form-label">The name you'll see in your profile</label>
+            <input
+              type="text"
+              id="displayName"
+              name="displayName"
+              value={form.displayName}
+              onChange={onChange}
+              className={`form-control ${getFieldError('displayName') ? 'is-invalid' : ''}`}
+            />
+            {getFieldError('displayName') && (
+              <div className="invalid-feedback">{getFieldError('displayName')}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
             <label htmlFor="password" className="form-label">Password</label>
             <input
               type="password"
@@ -75,6 +126,17 @@ const RegisterPage = () => {
             {getFieldError('password') && (
               <div className="invalid-feedback">{getFieldError('password')}</div>
             )}
+          </div>
+
+          <div className="mb-3">
+            <FileInput
+              id="avatar"
+              name="avatar"
+              label="Avatar"
+              onGetFile={onFileChange}
+              file={form.avatar}
+              className="form-control"
+            />
           </div>
 
           <button type="submit" className="btn btn-dark w-100">
