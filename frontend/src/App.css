@@ -34,3 +34,8 @@
 .user-menu-link:hover {
   color: #888e97 !important;
 }
+
+.user-avatar {
+  height: 40px;
+  width: 40px;
+}
