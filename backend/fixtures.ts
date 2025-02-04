@@ -22,15 +22,19 @@ const run = async () => {
 
     const [jane, john] = await User.create(
         {
-            username: "Jane",
+            username: "jane",
             password: "123",
             role: "admin",
+            displayName: "Jane Smith",
+            avatar:"fixtures/jane.jpg",
             token: randomUUID(),
         },
         {
-            username: "John",
+            username: "john",
             password: "123",
             role: "user",
+            displayName: "John Doe",
+            avatar:"fixtures/john.jpg",
             token: randomUUID(),
         }
     );
