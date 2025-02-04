@@ -17,18 +17,42 @@ const SALT_WORK_FACTOR = 10;
 const UserSchema = new Schema<HydratedDocument<UserFields>, UserModel, UserMethods>({
     username: {
         type: String,
-        required: true,
         unique: true,
-        validate: {
-            validator: async function (this: HydratedDocument<UserFields>, value: string): Promise<boolean> {
-                if (!this.isModified('username')) return true;
-                const user: UserFields | null = await User.findOne({username: value});
-                return !user;
+        validate: [
+            {
+                validator: async function (this: HydratedDocument<UserFields>, value: string): Promise<boolean> {
+                    if (!this.isModified('username')) return true;
+                    const user: UserFields | null = await User.findOne({username: value});
+                    return !user;
+                },
+                message: "This username is already taken.",
             },
-            message: "This username is already taken",
-        }
+            {
+                validator: function (value: string): boolean {
+                    return value.trim().length > 0;
+                },
+                message: "Fill in the login.",
+            },
+        ],
     },
     password: {
+        type: String,
+        validate: [
+            {
+                validator: async function (value: string): Promise<boolean> {
+                    return value === value.trim();
+                },
+                message: "The password must not consist of or contain spaces."
+            },
+            {
+                validator: async function (value: string): Promise<boolean> {
+                    return value.trim().length > 0;
+                },
+                message: "Fill in the password.",
+            },
+        ],
+    },
+    token: {
         type: String,
         required: true,
     },
@@ -38,10 +62,18 @@ const UserSchema = new Schema<HydratedDocument<UserFields>, UserModel, UserMetho
         default: 'user',
         enum: ['user', 'admin'],
     },
-    token: {
+    displayName: {
         type: String,
-        required: true,
-    }
+        validate:
+            {
+                validator: async function (value: string): Promise<boolean> {
+                    return value.trim().length > 0;
+                },
+                message: "Fill in the name to display in your profile.",
+            },
+    },
+    googleID: String,
+    avatar: String,
 });
 
 UserSchema.pre('save', async function (next) {
